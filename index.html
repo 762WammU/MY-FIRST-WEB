@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Resume</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header>
+    <nav class="nav">
+      <a href="index.html" class="brand">My Portfolio</a>
+      <div class="links">
+        <a href="converter.html">Converter</a>
+        <a href="grading.html">Grading</a>
+        <a href="change.html">Change</a>
+        <a href="geolocation.html">Geolocation</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>Resume</h1>
+    <p class="subtitle">This is the default landing page (index.html).</p>
+
+    <section class="card">
+      <h2>About Me</h2>
+      <p>Write your short bio here. You can replace this with your real resume content.</p>
+      <ul>
+        <li><strong>Skills:</strong> HTML, CSS, JavaScript</li>
+        <li><strong>Interests:</strong> Web Development, UX, AI</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Projects</h2>
+      <ul>
+        <li><a href="converter.html">Unit Converter</a> – convert temperature and length with validation.</li>
+        <li><a href="grading.html">Grading Tool</a> – compute letter grades from numeric scores (0–100).</li>
+        <li><a href="change.html">Change Calculator</a> – calculate change and denomination breakdown.</li>
+        <li><a href="geolocation.html">Geolocation</a> – find your distance to Kasem Bundit University.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>© <span id="year"></span></p>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
