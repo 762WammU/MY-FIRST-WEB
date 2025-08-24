@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Converter</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header>
+    <nav class="nav">
+      <a href="index.html" class="brand">My Portfolio</a>
+      <div class="links">
+        <a href="converter.html" aria-current="page">Converter</a>
+        <a href="grading.html">Grading</a>
+        <a href="change.html">Change</a>
+        <a href="geolocation.html">Geolocation</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <a class="back" href="index.html">← Back</a>
+    <h1>Unit Converter</h1>
+    <p class="subtitle">Temperature (°C ⇄ °F) and Length (km ⇄ mi)</p>
+
+    <section class="card">
+      <h2>Temperature</h2>
+      <form id="tempForm" novalidate>
+        <div class="grid2">
+          <label>
+            Celsius (°C)
+            <input id="celsius" name="celsius" type="number" step="any" placeholder="e.g., 25" />
+          </label>
+          <label>
+            Fahrenheit (°F)
+            <input id="fahrenheit" name="fahrenheit" type="number" step="any" placeholder="e.g., 77" />
+          </label>
+        </div>
+        <div class="actions">
+          <button type="button" id="cToF">C → F</button>
+          <button type="button" id="fToC">F → C</button>
+          <button type="reset">Clear</button>
+        </div>
+        <p class="help">Enter a number in one field, then click the appropriate button.</p>
+        <p id="tempError" class="error" role="alert" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Length</h2>
+      <form id="lenForm" novalidate>
+        <div class="grid2">
+          <label>
+            Kilometers (km)
+            <input id="km" name="km" type="number" step="any" placeholder="e.g., 10" />
+          </label>
+          <label>
+            Miles (mi)
+            <input id="mi" name="mi" type="number" step="any" placeholder="e.g., 6.2137" />
+          </label>
+        </div>
+        <div class="actions">
+          <button type="button" id="kToM">km → mi</button>
+          <button type="button" id="mToK">mi → km</button>
+          <button type="reset">Clear</button>
+        </div>
+        <p class="help">Enter a number in one field, then click the appropriate button.</p>
+        <p id="lenError" class="error" role="alert" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>© <span id="year"></span></p>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    function isNumber(v){ return typeof v === 'number' && !Number.isNaN(v); }
+
+    // Temperature
+    const c = document.getElementById('celsius');
+    const f = document.getElementById('fahrenheit');
+    const tempError = document.getElementById('tempError');
+
+    document.getElementById('cToF').addEventListener('click', () => {
+      tempError.textContent = '';
+      const cv = parseFloat(c.value);
+      if (!isNumber(cv)) { tempError.textContent = 'Please enter a valid Celsius value.'; return; }
+      f.value = (cv * 9/5 + 32).toFixed(2);
+    });
+
+    document.getElementById('fToC').addEventListener('click', () => {
+      tempError.textContent = '';
+      const fv = parseFloat(f.value);
+      if (!isNumber(fv)) { tempError.textContent = 'Please enter a valid Fahrenheit value.'; return; }
+      c.value = ((fv - 32) * 5/9).toFixed(2);
+    });
+
+    // Length
+    const km = document.getElementById('km');
+    const mi = document.getElementById('mi');
+    const lenError = document.getElementById('lenError');
+
+    document.getElementById('kToM').addEventListener('click', () => {
+      lenError.textContent = '';
+      const kv = parseFloat(km.value);
+      if (!isNumber(kv)) { lenError.textContent = 'Please enter a valid kilometer value.'; return; }
+      mi.value = (kv * 0.621371).toFixed(4);
+    });
+
+    document.getElementById('mToK').addEventListener('click', () => {
+      lenError.textContent = '';
+      const mv = parseFloat(mi.value);
+      if (!isNumber(mv)) { lenError.textContent = 'Please enter a valid mile value.'; return; }
+      km.value = (mv / 0.621371).toFixed(4);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Geolocation</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header>
+    <nav class="nav">
+      <a href="index.html" class="brand">My Portfolio</a>
+      <div class="links">
+        <a href="converter.html">Converter</a>
+        <a href="grading.html">Grading</a>
+        <a href="change.html">Change</a>
+        <a href="geolocation.html" aria-current="page">Geolocation</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <a class="back" href="index.html">← Back</a>
+    <h1>Geolocation Distance</h1>
+    <p class="subtitle">Click "Where am I?" to get your location and compute the distance to Kasem Bundit University.</p>
+
+    <section class="card">
+      <div class="grid2">
+        <label>
+          Campus
+          <select id="campus">
+            <option value="romklao">Kasem Bundit University – Romklao</option>
+            <option value="huamak">Kasem Bundit University – Hua Mak</option>
+            <option value="custom">Custom (enter coordinates)</option>
+          </select>
+        </label>
+        <label>
+          Custom Target (lat,lon)
+          <input id="customCoords" type="text" placeholder="e.g., 13.7563,100.5018" />
+        </label>
+      </div>
+      <div class="actions">
+        <button id="where">Where am I?</button>
+        <button id="reset">Reset</button>
+      </div>
+      <p id="status" class="help" aria-live="polite"></p>
+      <div id="output" class="result" hidden>
+        <p><strong>Your Location:</strong> <span id="me"></span></p>
+        <p><strong>Target:</strong> <span id="target"></span></p>
+        <p><strong>Distance:</strong> <span id="kms"></span> km away from the Kasem Bundit University</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Notes</h2>
+      <ul>
+        <li>Allow the browser to access your location.</li>
+        <li>If you want exact campus coordinates, switch to <em>Custom</em> and paste the lat/lon.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>© <span id="year"></span></p>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const campusSel = document.getElementById('campus');
+    const custom = document.getElementById('customCoords');
+    const status = document.getElementById('status');
+    const output = document.getElementById('output');
+    const me = document.getElementById('me');
+    const target = document.getElementById('target');
+    const kms = document.getElementById('kms');
+    const whereBtn = document.getElementById('where');
+    const resetBtn = document.getElementById('reset');
+
+    // ⚠️ Coordinates here are placeholders; if precision matters, set exact campus lat/lon.
+    const TARGETS = {
+      romklao: { name: 'Kasem Bundit University – Romklao', lat: 13.7839, lon: 100.7327 },
+      huamak:  { name: 'Kasem Bundit University – Hua Mak', lat: 13.746,  lon: 100.647 }
+    };
+
+    function getTarget() {
+      if (campusSel.value === 'custom') {
+        const parts = custom.value.split(',').map(s => s.trim());
+        if (parts.length === 2) {
+          const lat = parseFloat(parts[0]);
+          const lon = parseFloat(parts[1]);
+          if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
+            return { name: 'Custom Target', lat, lon };
+          }
+        }
+        return null;
+      }
+      return TARGETS[campusSel.value];
+    }
+
+    function haversine(lat1, lon1, lat2, lon2) {
+      const R = 6371; // km
+      const toRad = d => d * Math.PI / 180;
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
+    }
+
+    whereBtn.addEventListener('click', () => {
+      status.textContent = 'Requesting location…';
+      output.hidden = true;
+
+      const tgt = getTarget();
+      if (!tgt) { status.textContent = 'Please provide valid custom coordinates (lat,lon).'; return; }
+
+      if (!('geolocation' in navigator)) {
+        status.textContent = 'Geolocation not supported by this browser.';
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition((pos) => {
+        status.textContent = '';
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+
+        const d = haversine(lat, lon, tgt.lat, tgt.lon);
+        me.textContent = lat.toFixed(6) + ', ' + lon.toFixed(6);
+        target.textContent = tgt.name + ' (' + tgt.lat + ', ' + tgt.lon + ')';
+        kms.textContent = d.toFixed(2);
+
+        output.hidden = false;
+      }, (err) => {
+        status.textContent = 'Failed to get location: ' + err.message;
+      });
+    });
+
+    resetBtn.addEventListener('click', () => {
+      status.textContent = '';
+      output.hidden = true;
+      custom.value = '';
+      campusSel.value = 'romklao';
+    });
+  </script>
+</body>
+</html>

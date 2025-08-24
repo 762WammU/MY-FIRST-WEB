@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Grading</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header>
+    <nav class="nav">
+      <a href="index.html" class="brand">My Portfolio</a>
+      <div class="links">
+        <a href="converter.html">Converter</a>
+        <a href="grading.html" aria-current="page">Grading</a>
+        <a href="change.html">Change</a>
+        <a href="geolocation.html">Geolocation</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <a class="back" href="index.html">← Back</a>
+    <h1>Grading Tool</h1>
+    <p class="subtitle">Enter scores (0–100). We validate inputs and compute a letter grade.</p>
+
+    <section class="card">
+      <form id="gradeForm" novalidate>
+        <div class="grid2">
+          <label>
+            Assignment (40%)
+            <input id="assign" type="number" min="0" max="100" placeholder="0–100" required />
+          </label>
+          <label>
+            Midterm (25%)
+            <input id="mid" type="number" min="0" max="100" placeholder="0–100" required />
+          </label>
+          <label>
+            Final (35%)
+            <input id="final" type="number" min="0" max="100" placeholder="0–100" required />
+          </label>
+        </div>
+        <div class="actions">
+          <button type="submit">Calculate</button>
+          <button type="reset" id="resetBtn">Clear</button>
+        </div>
+        <p id="gradeError" class="error" role="alert" aria-live="polite"></p>
+      </form>
+
+      <div id="result" class="result" hidden>
+        <p><strong>Total:</strong> <span id="totalScore"></span>%</p>
+        <p><strong>Grade:</strong> <span id="letterGrade"></span></p>
+        <p><strong>Status:</strong> <span id="status"></span></p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© <span id="year"></span></p>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const form = document.getElementById('gradeForm');
+    const assign = document.getElementById('assign');
+    const mid = document.getElementById('mid');
+    const finalExam = document.getElementById('final');
+    const err = document.getElementById('gradeError');
+    const result = document.getElementById('result');
+    const totalScore = document.getElementById('totalScore');
+    const letterGrade = document.getElementById('letterGrade');
+    const status = document.getElementById('status');
+
+    function valid(v){ return v !== '' && !Number.isNaN(parseFloat(v)) && parseFloat(v) >= 0 && parseFloat(v) <= 100; }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      err.textContent = '';
+      result.hidden = true;
+
+      if (!valid(assign.value) || !valid(mid.value) || !valid(finalExam.value)) {
+        err.textContent = 'All inputs must be numbers between 0 and 100.';
+        return;
+      }
+
+      const a = parseFloat(assign.value);
+      const m = parseFloat(mid.value);
+      const f = parseFloat(finalExam.value);
+
+      const total = a * 0.40 + m * 0.25 + f * 0.35;
+      totalScore.textContent = total.toFixed(2);
+
+      let grade = 'F';
+      if (total >= 90) grade = 'A';
+      else if (total >= 80) grade = 'B';
+      else if (total >= 70) grade = 'C';
+      else if (total >= 60) grade = 'D';
+
+      letterGrade.textContent = grade;
+      status.textContent = total >= 60 ? 'PASS' : 'FAIL';
+      result.hidden = false;
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      err.textContent = '';
+      result.hidden = true;
+    });
+  </script>
+</body>
+</html>

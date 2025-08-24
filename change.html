@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Change Calculator</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header>
+    <nav class="nav">
+      <a href="index.html" class="brand">My Portfolio</a>
+      <div class="links">
+        <a href="converter.html">Converter</a>
+        <a href="grading.html">Grading</a>
+        <a href="change.html" aria-current="page">Change</a>
+        <a href="geolocation.html">Geolocation</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <a class="back" href="index.html">← Back</a>
+    <h1>Change Calculator</h1>
+    <p class="subtitle">Enter a total price and cash received. We'll compute the change and a Thai Baht denomination breakdown.</p>
+
+    <section class="card">
+      <form id="changeForm" novalidate>
+        <div class="grid2">
+          <label>
+            Total Price (THB)
+            <input id="total" type="number" min="0" step="0.01" placeholder="e.g., 157.00" required />
+          </label>
+          <label>
+            Cash Received (THB)
+            <input id="cash" type="number" min="0" step="0.01" placeholder="e.g., 200.00" required />
+          </label>
+        </div>
+        <div class="actions">
+          <button type="submit">Calculate</button>
+          <button type="reset" id="resetBtn">Clear</button>
+        </div>
+        <p id="changeError" class="error" role="alert" aria-live="polite"></p>
+      </form>
+
+      <div id="result" class="result" hidden>
+        <p><strong>Change Due:</strong> ฿<span id="changeAmount"></span></p>
+        <div id="breakdown"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© <span id="year"></span></p>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const form = document.getElementById('changeForm');
+    const total = document.getElementById('total');
+    const cash = document.getElementById('cash');
+    const err = document.getElementById('changeError');
+    const result = document.getElementById('result');
+    const changeAmountEl = document.getElementById('changeAmount');
+    const breakdown = document.getElementById('breakdown');
+
+    // Thai Baht denominations (banknotes + coins)
+    const denoms = [1000, 500, 100, 50, 20, 10, 5, 2, 1, 0.5, 0.25];
+
+    function isValidMoney(v) {
+      return v !== '' && !Number.isNaN(parseFloat(v)) && parseFloat(v) >= 0;
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      err.textContent = '';
+      result.hidden = true;
+      breakdown.innerHTML = '';
+
+      if (!isValidMoney(total.value) || !isValidMoney(cash.value)) {
+        err.textContent = 'Please enter valid amounts for Total and Cash Received.';
+        return;
+      }
+
+      const t = parseFloat(total.value);
+      const c = parseFloat(cash.value);
+      if (c < t) { err.textContent = 'Cash received must be greater than or equal to total price.'; return; }
+
+      let change = Math.round((c - t) * 100) / 100; // round to 2 decimals
+      changeAmountEl.textContent = change.toFixed(2);
+
+      let remaining = change;
+      const list = document.createElement('ul');
+      list.className = 'list';
+
+      for (const d of denoms) {
+        const count = Math.floor((remaining + 1e-9) / d);
+        if (count > 0) {
+          const li = document.createElement('li');
+          li.textContent = `${count} × ฿${d}`;
+          list.appendChild(li);
+          remaining = Math.round((remaining - count * d) * 100) / 100;
+        }
+      }
+
+      if (list.children.length === 0) {
+        const li = document.createElement('li');
+        li.textContent = 'No change required.';
+        list.appendChild(li);
+      }
+
+      breakdown.appendChild(list);
+      result.hidden = false;
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      err.textContent = '';
+      result.hidden = true;
+      breakdown.innerHTML = '';
+    });
+  </script>
+</body>
+</html>
